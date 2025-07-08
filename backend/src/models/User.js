@@ -21,7 +21,10 @@ const userShcema = new mongoose.Schema({
     type: String,
     default: "",
   },
-});
+},
+{
+    timestamps: true
+}); // Add timestamps to track creation and update times
 
 // hash password before saving user to db
 
