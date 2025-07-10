@@ -11,16 +11,36 @@ import styles from "../../assets/styles/signup.styles";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useState } from "react";
+
 import COLORS from "../../constants/color";
+import { useAuthStore } from "../../store/authStore";
 
 export default function signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  
 
-  const handleSignup = () => {};
+  const {user, isLoading,register,token} = useAuthStore();
+
+  const handleSignup = async() => {
+
+    const result=await register(username, email, password);
+
+    if (!result.success) {
+      // Handle error, e.g., show an alert or toast 
+      console.error("Signup failed:", result.error);
+      return;
+    }
+
+    if (result.success) {
+      // Handle successful signup, e.g., navigate to login or home screen
+      console.log("Signup successful:", result.message);
+      console.log("User data:", user);
+      console.log("Token:", token);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
