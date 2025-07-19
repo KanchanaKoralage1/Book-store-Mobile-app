@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -64,7 +65,10 @@ export default function Create() {
       } else {
         Alert.alert("No image selected");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Error picking image:", error);
+      Alert.alert("Error picking image", "Please try again later.");
+    }
   };
 
   const handleSubmit = async () => {};
@@ -150,6 +154,40 @@ export default function Create() {
                 )}
               </TouchableOpacity>
             </View>
+            {/* caption */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Caption</Text>
+
+              <TextInput
+                style={styles.textArea}
+                multiline
+                value={caption}
+                onChangeText={setCaption}
+                placeholder="Enter caption"
+                placeholderTextColor={COLORS.placeholderText}
+              />
+            </View>
+
+            {/* submit button */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+                {isLoading ?(
+                    <ActivityIndicator color={COLORS.white}/>
+                ) : (
+                    <>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={24}
+                color={COLORS.white}
+                style={styles.buttonIcon}
+                />
+                <Text style={styles.buttonText}>Submit</Text>
+                </>
+                )}
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
