@@ -5,15 +5,23 @@ import { useState } from "react";
 import { Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/color";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const{isLoading,login}=useAuthStore();
 
-  const handleLogin = () => {
-    // Handle login logic here
+  const handleLogin = async() => {
+    
+    const result = await login(email, password);
+
+    if (!result.success) {
+      // Handle error, e.g., show an alert or toast
+      console.error("Login failed:", result.error);
+      return;
+    }
   };
 
   return (

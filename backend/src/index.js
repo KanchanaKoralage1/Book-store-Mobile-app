@@ -11,10 +11,7 @@ const app=express();
 const PORT=process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:3000", // Adjust this to your frontend URL
-    credentials: true, // Allow credentials if needed
-}));
+app.use(cors());
 
 app.use("/api/auth",authRoutes);
 app.use("/api/books",bookRoutes);
