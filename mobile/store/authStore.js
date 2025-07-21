@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "../constants/api";
+
+
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -13,7 +16,7 @@ export const useAuthStore = create((set) => ({
       //http://localhost:3000/api/auth/register
 
       const response = await fetch(
-        "http://192.168.8.186:3000/api/auth/register",
+        `${API_URL}/api/auth/register`,
         {
           method: "POST",
           headers: {
@@ -29,9 +32,13 @@ export const useAuthStore = create((set) => ({
         throw new Error(data.message || "Registration failed");
       }
 
+      console.log("Register response data:", data);
+
       // Save user data and token to AsyncStorage
       await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
+
+      console.log("Token saved to AsyncStorage:", data.token);
 
       // Update the store with user data and token
       set({ user: data.user, token: data.token, isLoading: false });
@@ -61,7 +68,7 @@ export const useAuthStore = create((set) => ({
   login: async (email, password) => {
     set({ isLoading: true });
     try {
-      const response = await fetch("http://192.168.8.186:3000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,9 +80,13 @@ export const useAuthStore = create((set) => ({
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+
+      console.log("Login response data:", data);
       // Save user data and token to AsyncStorage
       await AsyncStorage.setItem("user", JSON.stringify(data.user));
       await AsyncStorage.setItem("token", data.token);
+
+      console.log("Token saved to AsyncStorage:", data.token);
       // Update the store with user data and token
       set({ user: data.user, token: data.token, isLoading: false });
       return {

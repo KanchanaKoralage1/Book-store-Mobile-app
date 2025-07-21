@@ -17,6 +17,8 @@ import COLORS from "../../constants/color";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-image-picker";
+import { useAuthStore } from "../../store/authStore";
+import { API_URL } from "../../constants/api";
 
 export default function Create() {
   const [title, setTitle] = useState("");
@@ -27,6 +29,9 @@ export default function Create() {
   const [rating, setRating] = useState(3);
 
   const router = useRouter();
+  const { token } = useAuthStore();
+
+  console.log("token", token);
 
   const pickImage = async () => {
     try {
@@ -71,7 +76,57 @@ export default function Create() {
     }
   };
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    console.log("Token being sent:", token);
+    if (!title || !caption || !imageBase64 || !rating) {
+      Alert.alert("All fields are required");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const uriParts = image.split(".");
+      const fileType = uriParts[uriParts.length - 1];
+      const imageType = fileType
+        ? `image/${fileType.toLowerCase()}`
+        : "image/jpeg";
+      const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
+
+      const response = await fetch(`${API_URL}/api/books`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          caption,
+          image: imageDataUrl,
+          rating: rating.toString(),
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create book recommendation");
+      }
+      Alert.alert("Success", "Book recommendation created successfully");
+      setTitle("");
+      setCaption("");
+      setImage(null);
+      setImageBase64(null);
+      setRating(3);
+      router.push("/");
+    } catch (error) {
+      console.error("Error creating book recommendation:", error);
+      Alert.alert(
+        "Error",
+        error.message || "Failed to create book recommendation"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const renderRatingPicker = () => {
     const stars = [];
@@ -174,19 +229,19 @@ export default function Create() {
               onPress={handleSubmit}
               disabled={isLoading}
             >
-                {isLoading ?(
-                    <ActivityIndicator color={COLORS.white}/>
-                ) : (
-                    <>
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={24}
-                color={COLORS.white}
-                style={styles.buttonIcon}
-                />
-                <Text style={styles.buttonText}>Submit</Text>
+              {isLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <>
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={24}
+                    color={COLORS.white}
+                    style={styles.buttonIcon}
+                  />
+                  <Text style={styles.buttonText}>Submit</Text>
                 </>
-                )}
+              )}
             </TouchableOpacity>
           </View>
         </View>

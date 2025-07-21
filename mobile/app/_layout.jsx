@@ -17,14 +17,7 @@ export default function RootLayout() {
     checkAuth();
   },[]);
 
-  // useEffect(() => {
-  //   const isAuthScreen = segments[0] === "(auth)";
-  //   const isSignedIn=user&&token;
-
-  //   if(!isAuthScreen && !isSignedIn) router.replace("/(auth)");
-  //   else if(isAuthScreen && isSignedIn) router.replace("/(tabs)");
-  // }, [segments, user, token]);
-
+  
   useEffect(() => {
   const timeout = setTimeout(() => {
     const isAuthScreen = segments[0] === "(auth)";

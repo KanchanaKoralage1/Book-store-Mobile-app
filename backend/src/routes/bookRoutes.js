@@ -103,8 +103,8 @@ router.get("/:id", protectRoute, async (req, res) => {
 
 router.get("/", protectRoute, async (req, res) => {
   try {
-    const page = req.query.page || 1; // Get the page number from query parameters, default to 1
-    const limit = req.query.limit || 5; // Number of books per page
+    const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1
+    const limit = parseInt(req.query.limit) || 5; // Number of books per page
     const skip = (page - 1) * limit; // Calculate the number of books to skip based on the page number
 
     const books = await Book.find()
@@ -118,7 +118,7 @@ router.get("/", protectRoute, async (req, res) => {
     res.send({
       books,
       currentPage: page,
-      totalBooks: await Book.countDocuments(), // Get the total number of books in the database
+      totalBooks, // Get the total number of books in the database
       totalPages: Math.ceil(totalBooks / limit), // Calculate the total number of pages
     });
   } catch (error) {
