@@ -5,6 +5,7 @@ node_modules/
 
 constants/api.js
 
+
 # Expo
 .expo/
 dist/
