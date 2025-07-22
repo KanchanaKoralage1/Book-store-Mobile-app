@@ -4,6 +4,8 @@ A full-stack Book Store application with a React Native (Expo) mobile frontend a
 
 ## 🎥 Demo Video
 
+https://mysliit-my.sharepoint.com/:v:/g/personal/it22584472_my_sliit_lk/ES8cJxjP3eBDvpTPZR3vKmgBMVvFiZlro0alC14LGPqu5Q?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=PjRsIB
+
 ## ✨ Features
 
 - User authentication (register, login, logout)
