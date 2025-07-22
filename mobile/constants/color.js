@@ -11,6 +11,7 @@ const COLORS = {
   border: "#c8e6c9",
   white: "#ffffff",
   black: "#000000",
+  danger: "#d32f2f",
 };
 
 // RETRO
@@ -27,6 +28,7 @@ const COLORS = {
   border: "#e2d6c1",
   white: "#ffffff",
   black: "#000000",
+  danger: "#d32f2f"
 };
 */
 
@@ -44,6 +46,7 @@ const COLORS = {
   border: "#bbdefb",
   white: "#ffffff",
   black: "#000000",
+  danger: "#d32f2f"
 };
 */
 
@@ -61,6 +64,7 @@ const COLORS = {
   border: "#f8bbd0",
   white: "#ffffff",
   black: "#000000",
+  danger: "#d32f2f"
 };
 */
 

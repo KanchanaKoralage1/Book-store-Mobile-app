@@ -81,6 +81,22 @@ router.put("/:id", protectRoute, async (req, res) => {
   }
 });
 
+//get recomendation books by logged user
+
+router.get("/user", protectRoute, async (req, res) => {
+  console.log("📘 /books/user route hit with user:", req.user._id); 
+  try {
+    const books = await Book.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
+    // Find books by the logged-in user
+    res.status(200).json(books);
+  } catch (error) {
+    console.error("Error fetching user books:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 //get a book by id
 
 router.get("/:id", protectRoute, async (req, res) => {
@@ -158,20 +174,6 @@ router.delete("/:id", protectRoute, async (req, res) => {
     res.status(200).json({ message: "Book deleted successfully" });
   } catch (error) {
     console.error("Error deleting book:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-//get recomendation books by logged user
-
-router.get("/user", protectRoute, async (req, res) => {
-  try {
-    const books = await Book.find(
-      { user: req.user._id }.sort({ createdAt: -1 })
-    ); // Find books by the logged-in user
-    res.status(200).json(books);
-  } catch (error) {
-    console.error("Error fetching user books:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

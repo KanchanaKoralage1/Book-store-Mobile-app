@@ -2,13 +2,12 @@ import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import { useAuthStore } from "../../store/authStore";
 import styles from "../../assets/styles/home.styles";
-import React, { useEffect, useState,useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import { API_URL } from "../../constants/api";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../../constants/color";
 import { formatPublishDate } from "../../lib/utils";
-
 
 export default function Home() {
   const { logout, token } = useAuthStore();
@@ -19,138 +18,73 @@ export default function Home() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // const fetchBooks = async (pageNum = 1, refresh = false) => {
-  //   if (!token) {
-  //     console.log("No token available, skipping fetchBooks");
-  //     setLoading(false);
-  //     return;
-  //   }
-  //   try {
-  //     console.log("Token being sent:", token);
-  //     console.log(`Fetching books: page=${pageNum}, refresh=${refresh}`);
-  //     if (refresh) {
-  //     setRefreshing(true);
-  //     setHasMore(true); // Reset for new refresh
-  //   } else {
-  //     setLoading(true);
-  //   }
-
-  //     //`${API_URL}/api/books?page=${pageNum}&limit=5`
-      
-  //     const response = await fetch(
-  //       `${API_URL}/api/books?page=${pageNum}&limit=5`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     const data = await response.json();
-
-  //     console.log(`Fetch response:`, {
-  //       booksLength: data.books?.length,
-  //       currentPage: data.currentPage,
-  //       totalBooks: data.totalBooks,
-  //       totalPages: data.totalPages,
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(data.message || "Failed to fetch books");
-  //     }
-
-  //     if (!data.books || !Array.isArray(data.books)) {
-  //       throw new Error("Invalid books data received from server");
-  //     }
-
-  //     const uniqueBooks =
-  //       refresh || pageNum === 1
-  //         ? data.books
-  //         : Array.from(
-  //             new Set([...books, ...data.books].map((book) => book._id))
-  //           ).map((id) =>
-  //             [...books, ...data.books].find((book) => book._id === id)
-  //           );
-
-  //     setBooks(uniqueBooks);
-
-  //     setHasMore(pageNum < data.totalPages && data.books.length > 0);
-  //     setPage(pageNum);
-  //   } catch (error) {
-  //     console.error("Error fetching books:", error);
-  //   } finally {
-  //     if (refresh) {
-  //       setRefreshing(false);
-  //     } else {
-  //       setLoading(false);
-  //     }
-  //   }
-  // };
-
   const fetchBooks = async (pageNum = 1, refresh = false, loadMore = false) => {
-  const isInitial = !refresh && !loadMore;
+    const isInitial = !refresh && !loadMore;
 
-  if (!token) {
-    console.log("No token available, skipping fetchBooks");
-    if (isInitial) setLoading(false);
-    if (refresh) setRefreshing(false);
-    if (loadMore) setLoadingMore(false);
-    return;
-  }
-
-  try {
-    console.log("Fetching books: page=", pageNum, "refresh=", refresh, "loadMore=", loadMore);
-
-    if (refresh) {
-      setRefreshing(true);
-      setHasMore(true);
-    } else if (loadMore) {
-      setLoadingMore(true);
-    } else {
-      setLoading(true);
+    if (!token) {
+      console.log("No token available, skipping fetchBooks");
+      if (isInitial) setLoading(false);
+      if (refresh) setRefreshing(false);
+      if (loadMore) setLoadingMore(false);
+      return;
     }
 
-    const response = await fetch(`${API_URL}/api/books?page=${pageNum}&limit=5`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      console.log(
+        "Fetching books: page=",
+        pageNum,
+        "refresh=",
+        refresh,
+        "loadMore=",
+        loadMore
+      );
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Fetch failed");
+      if (refresh) {
+        setRefreshing(true);
+        setHasMore(true);
+      } else if (loadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
 
-    const newBooks = data.books || [];
+      const response = await fetch(
+        `${API_URL}/api/books?page=${pageNum}&limit=5`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    // const uniqueBooks =
-    //   refresh || pageNum === 1
-    //     ? newBooks
-    //     : Array.from(new Set([...books, ...newBooks].map((b) => b._id)))
-    //         .map((id) => [...books, ...newBooks].find((b) => b._id === id));
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Fetch failed");
 
-    setBooks((prevBooks) => {
-  const combinedBooks = refresh || pageNum === 1
-    ? newBooks
-    : [...prevBooks, ...newBooks];
+      const newBooks = data.books || [];
 
-  const deduplicated = Array.from(
-    new Set(combinedBooks.map((b) => b._id))
-  ).map((id) => combinedBooks.find((b) => b._id === id));
+      setBooks((prevBooks) => {
+        const combinedBooks =
+          refresh || pageNum === 1 ? newBooks : [...prevBooks, ...newBooks];
 
-  return deduplicated;
-});
-    setHasMore(pageNum < data.totalPages && newBooks.length > 0);
-    setPage(pageNum);
-  } catch (error) {
-    console.error("Error fetching books:", error);
-  } finally {
-   setLoading(false);
-  setRefreshing(false);
-  setLoadingMore(false);
-  console.log('fetchBooks complete:', {
-    loading,
-    refreshing,
-    loadingMore
-  });
-  }
-};
+        const deduplicated = Array.from(
+          new Set(combinedBooks.map((b) => b._id))
+        ).map((id) => combinedBooks.find((b) => b._id === id));
+
+        return deduplicated;
+      });
+      setHasMore(pageNum < data.totalPages && newBooks.length > 0);
+      setPage(pageNum);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+      setLoadingMore(false);
+      console.log("fetchBooks complete:", {
+        loading,
+        refreshing,
+        loadingMore,
+      });
+    }
+  };
 
   // Use useFocusEffect to refetch books when the screen is focused
   useFocusEffect(
@@ -162,19 +96,18 @@ export default function Home() {
     }, [token])
   );
 
- const handleLoadMore = () => {
-  if (hasMore && !loading && !loadingMore && !refreshing) {
-    console.log("Loading more books...");
-    fetchBooks(page + 1, false, true);
-  } else {
-    console.log(
-      `handleLoadMore not triggered: hasMore=${hasMore}, loading=${loading}, loadingMore=${loadingMore}, refreshing=${refreshing}`
-    );
-  }
-};
+  const handleLoadMore = () => {
+    if (hasMore && !loading && !loadingMore && !refreshing) {
+      console.log("Loading more books...");
+      fetchBooks(page + 1, false, true);
+    } else {
+      console.log(
+        `handleLoadMore not triggered: hasMore=${hasMore}, loading=${loading}, loadingMore=${loadingMore}, refreshing=${refreshing}`
+      );
+    }
+  };
 
   const renderItem = ({ item }) => (
-    
     <View style={styles.bookCard}>
       <View style={styles.bookHeader}>
         <View style={styles.userInfo}>
@@ -230,32 +163,37 @@ export default function Home() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
-
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
-
         ListHeaderComponent={
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Book Store</Text>
-          <Text style={styles.headerSubtitle}>Discover Your Great Readings Here</Text>
-        </View>}
-
-       ListFooterComponent={
-  loadingMore ? (
-    <ActivityIndicator style={styles.footerLoader} size="small" color={COLORS.primary} />
-  ) : null
-}
-
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Book Store</Text>
+            <Text style={styles.headerSubtitle}>
+              Discover Your Great Readings Here
+            </Text>
+          </View>
+        }
+        ListFooterComponent={
+          loadingMore ? (
+            <ActivityIndicator
+              style={styles.footerLoader}
+              size="small"
+              color={COLORS.primary}
+            />
+          ) : null
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="book-outline" size={60} color={COLORS.textSecondary}/>
+            <Ionicons
+              name="book-outline"
+              size={60}
+              color={COLORS.textSecondary}
+            />
             <Text style={styles.emptyText}>No Books Recommendations Yet</Text>
             <Text style={styles.emptySubtext}>Please check back later</Text>
-
           </View>
         }
       />
-
     </View>
   );
 }

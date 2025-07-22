@@ -1,6 +1,6 @@
 // styles/profile.styles.js
 import { StyleSheet } from "react-native";
-import COLORS from "../../constants/colors";
+import COLORS from "../../constants/color";
 
 const styles = StyleSheet.create({
   container: {
@@ -136,6 +136,10 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   deleteButton: {
+    padding: 8,
+    justifyContent: "center",
+  },
+  editButton: {
     padding: 8,
     justifyContent: "center",
   },
