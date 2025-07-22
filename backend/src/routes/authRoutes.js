@@ -87,7 +87,6 @@ router.post("/register", async (req, res) => {
       email,
       password,
       profileImage: "",
-      
     });
 
     await user.save();

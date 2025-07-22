@@ -1,16 +1,16 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes.js';
-import bookRoutes from './routes/bookRoutes.js';
-import cors from 'cors';
-import { connectDB } from './lib/db.js';
+import express from "express";
+import dotenv from "dotenv";
+import authRoutes from "./routes/authRoutes.js";
+import bookRoutes from "./routes/bookRoutes.js";
+import cors from "cors";
+import { connectDB } from "./lib/db.js";
 
 dotenv.config();
 
-const app=express();
-const PORT=process.env.PORT || 3000;
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
 
 const corsOptions = {
   origin: "*", // Replace with specific URL for production
@@ -19,12 +19,10 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use("/api/auth",authRoutes);
-app.use("/api/books",bookRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/books", bookRoutes);
 
-
-app.listen(PORT,()=>{
-    console.log("Server is running on port 3000");
-    connectDB()
+app.listen(PORT, () => {
+  console.log("Server is running on port 3000");
+  connectDB();
 });
-

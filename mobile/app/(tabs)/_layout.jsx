@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../../constants/color";
 import COLORS from "../../constants/color";
 
 export default function TabLayout() {
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -14,19 +14,19 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
         headerTitleStyle: {
-          color:COLORS.textPrimary,
-          fontWeight:"600",
+          color: COLORS.textPrimary,
+          fontWeight: "600",
         },
         headerShadowVisible: false,
         tabBarStyle: {
-            backgroundColor: COLORS.cardBackground,
-            borderTopWidth: 1,
-            borderTopColor: COLORS.border,
-            paddingTop:5,
-            paddingBottom: insets.bottom,
-            height: 60+insets.bottom,
-            elevation: 0,
-            },
+          backgroundColor: COLORS.cardBackground,
+          borderTopWidth: 1,
+          borderTopColor: COLORS.border,
+          paddingTop: 5,
+          paddingBottom: insets.bottom,
+          height: 60 + insets.bottom,
+          elevation: 0,
+        },
         tabBarInactiveTintColor: "gray",
       }}
     >
@@ -35,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color}/>
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -44,7 +44,7 @@ export default function TabLayout() {
         options={{
           title: "Create",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color}/>
+            <Ionicons name="add-circle-outline" size={size} color={color} />
           ),
         }}
       />
@@ -53,7 +53,7 @@ export default function TabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color}/>
+            <Ionicons name="person-outline" size={size} color={color} />
           ),
         }}
       />

@@ -1,30 +1,32 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-const userShcema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
+const userShcema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    profileImage: {
+      type: String,
+      default: "",
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-  },
-  profileImage: {
-    type: String,
-    default: "",
-  },
-},
-{
-    timestamps: true
-}); // Add timestamps to track creation and update times
+  {
+    timestamps: true,
+  }
+); // Add timestamps to track creation and update times
 
 // hash password before saving user to db
 

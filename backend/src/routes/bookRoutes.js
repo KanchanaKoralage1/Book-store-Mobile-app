@@ -84,7 +84,7 @@ router.put("/:id", protectRoute, async (req, res) => {
 //get recomendation books by logged user
 
 router.get("/user", protectRoute, async (req, res) => {
-  console.log("📘 /books/user route hit with user:", req.user._id); 
+  console.log("📘 /books/user route hit with user:", req.user._id);
   try {
     const books = await Book.find({ user: req.user._id }).sort({
       createdAt: -1,
