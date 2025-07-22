@@ -2,6 +2,8 @@ import express from "express";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import cloudinary from "../lib/cloudinary.js";
+import { protectRoute } from "../middleware/authMiddleware.js";
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -105,6 +107,40 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/profile-image", protectRoute, async (req, res) => {
+  try {
+    const { image } = req.body;
+    if (!image) return res.status(400).json({ message: "No image provided" });
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Remove old image from Cloudinary
+    if (user.profileImage?.includes("cloudinary")) {
+      const publicId = user.profileImage.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    const uploaded = await cloudinary.uploader.upload(image);
+    user.profileImage = uploaded.secure_url;
+    await user.save();
+
+    res.status(200).json({
+      message: "Profile image updated",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (err) {
+    console.error("Profile image update error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

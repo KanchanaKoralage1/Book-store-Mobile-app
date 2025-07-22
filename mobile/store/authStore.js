@@ -104,4 +104,10 @@ export const useAuthStore = create((set) => ({
     await AsyncStorage.removeItem("user");
     set({ user: null, token: null });
   },
+
+   setUser: async (user) => {
+    await AsyncStorage.setItem("user", JSON.stringify(user));
+    set({ user });
+  },
+
 }));

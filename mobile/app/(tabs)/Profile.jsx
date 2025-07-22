@@ -1,4 +1,13 @@
-import { View, Text, Alert, FlatList, TouchableOpacity,TextInput,Modal,ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  ScrollView,
+} from "react-native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
@@ -18,13 +27,13 @@ export default function Profile() {
   const [isloading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-const [editBookData, setEditBookData] = useState({
-  _id: "",
-  title: "",
-  caption: "",
-  rating: 1,
-  image: "",
-});
+  const [editBookData, setEditBookData] = useState({
+    _id: "",
+    title: "",
+    caption: "",
+    rating: 1,
+    image: "",
+  });
 
   const router = useRouter();
   const { token } = useAuthStore();
@@ -97,43 +106,41 @@ const [editBookData, setEditBookData] = useState({
     );
   };
 
-const handleUpdateBook = async () => {
-  try {
-    const { _id, title, caption, rating, image } = editBookData;
+  const handleUpdateBook = async () => {
+    try {
+      const { _id, title, caption, rating, image } = editBookData;
 
-    const response = await fetch(`${API_URL}/api/books/${_id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title, caption, rating, image }),
-    });
+      const response = await fetch(`${API_URL}/api/books/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, caption, rating, image }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update book");
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update book");
+      }
+
+      setBooks((prev) => prev.map((book) => (book._id === _id ? data : book)));
+
+      setEditModalVisible(false);
+      Alert.alert("Success", "Book updated successfully");
+    } catch (error) {
+      console.error("Update error:", error);
+      Alert.alert("Error", error.message);
     }
-
-    setBooks((prev) =>
-      prev.map((book) => (book._id === _id ? data : book))
-    );
-
-    setEditModalVisible(false);
-    Alert.alert("Success", "Book updated successfully");
-  } catch (error) {
-    console.error("Update error:", error);
-    Alert.alert("Error", error.message);
-  }
-};
+  };
 
   //const handleUpdateBook = async () => {}
 
   const openEditForm = (book) => {
-  setEditBookData(book);
-  setEditModalVisible(true);
-};
+    setEditBookData(book);
+    setEditModalVisible(true);
+  };
 
   const renderBookItems = ({ item }) => (
     <View style={styles.bookItem}>
@@ -187,10 +194,8 @@ const handleUpdateBook = async () => {
       <ProfileHeader />
       <LogoutButton />
 
-      <View style={styles.container}>
-        <Text style={styles.bookTitle}>Your Current Books</Text>
-        <Text style={styles.booksCount}>{books.length} Books</Text>
-      </View>
+      <Text style={styles.bookTitle}>Your Current Book Recommendations</Text>
+      <Text style={styles.booksCount}>{books.length} Books</Text>
 
       <FlatList
         data={books}
@@ -216,104 +221,107 @@ const handleUpdateBook = async () => {
           </View>
         }
       />
-{/*  Edit Book Modal */}
+      {/*  Edit Book Modal */}
       <Modal visible={editModalVisible} animationType="slide">
-  <ScrollView contentContainerStyle={editStyles.container}>
-    <View style={editStyles.card}>
-      <Text style={editStyles.title}>Edit Book</Text>
+        <ScrollView contentContainerStyle={editStyles.container}>
+          <View style={editStyles.card}>
+            <Text style={editStyles.title}>Edit Book</Text>
 
-      <View style={editStyles.formGroup}>
-        <Text style={editStyles.label}>Title</Text>
-        <View style={editStyles.inputContainer}>
-          <TextInput
-            style={editStyles.input}
-            value={editBookData.title}
-            onChangeText={(text) =>
-              setEditBookData({ ...editBookData, title: text })
-            }
-          />
-        </View>
-      </View>
-
-      <View style={editStyles.formGroup}>
-        <Text style={editStyles.label}>Caption</Text>
-        <TextInput
-          style={editStyles.textArea}
-          multiline
-          value={editBookData.caption}
-          onChangeText={(text) =>
-            setEditBookData({ ...editBookData, caption: text })
-          }
-        />
-      </View>
-
-      <View style={editStyles.formGroup}>
-        <Text style={editStyles.label}>Rating</Text>
-        <View style={editStyles.ratingContainer}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <TouchableOpacity
-              key={i}
-              onPress={() =>
-                setEditBookData({ ...editBookData, rating: i })
-              }
-              style={editStyles.starButton}
-            >
-              <Ionicons
-                name={i <= editBookData.rating ? "star" : "star-outline"}
-                size={20}
-                color="#f4b814ff"
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      <View style={editStyles.formGroup}>
-        <Text style={editStyles.label}>Image</Text>
-        <TouchableOpacity
-          style={editStyles.imagePicker}
-          onPress={async () => {
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              quality: 0.5,
-              base64: true,
-            });
-
-            if (!result.canceled) {
-              const base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
-              setEditBookData({ ...editBookData, image: base64Img });
-            }
-          }}
-        >
-          {editBookData.image ? (
-            <Image
-              source={editBookData.image}
-              style={editStyles.previewImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={editStyles.placeholderContainer}>
-              <Text style={editStyles.placeholderText}>Tap to select image</Text>
+            <View style={editStyles.formGroup}>
+              <Text style={editStyles.label}>Title</Text>
+              <View style={editStyles.inputContainer}>
+                <TextInput
+                  style={editStyles.input}
+                  value={editBookData.title}
+                  onChangeText={(text) =>
+                    setEditBookData({ ...editBookData, title: text })
+                  }
+                />
+              </View>
             </View>
-          )}
-        </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity style={editStyles.button} onPress={handleUpdateBook}>
-        <Text style={editStyles.buttonText}>Update</Text>
-      </TouchableOpacity>
+            <View style={editStyles.formGroup}>
+              <Text style={editStyles.label}>Caption</Text>
+              <TextInput
+                style={editStyles.textArea}
+                multiline
+                value={editBookData.caption}
+                onChangeText={(text) =>
+                  setEditBookData({ ...editBookData, caption: text })
+                }
+              />
+            </View>
 
-      <TouchableOpacity
-        style={editStyles.buttonCancel}
-        onPress={() => setEditModalVisible(false)}
-      >
-        <Text style={editStyles.buttonText}>Cancel</Text>
-      </TouchableOpacity>
-    </View>
-  </ScrollView>
-</Modal>
+            <View style={editStyles.formGroup}>
+              <Text style={editStyles.label}>Rating</Text>
+              <View style={editStyles.ratingContainer}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() =>
+                      setEditBookData({ ...editBookData, rating: i })
+                    }
+                    style={editStyles.starButton}
+                  >
+                    <Ionicons
+                      name={i <= editBookData.rating ? "star" : "star-outline"}
+                      size={20}
+                      color="#f4b814ff"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
 
+            <View style={editStyles.formGroup}>
+              <Text style={editStyles.label}>Image</Text>
+              <TouchableOpacity
+                style={editStyles.imagePicker}
+                onPress={async () => {
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    quality: 0.5,
+                    base64: true,
+                  });
 
+                  if (!result.canceled) {
+                    const base64Img = `data:image/jpg;base64,${result.assets[0].base64}`;
+                    setEditBookData({ ...editBookData, image: base64Img });
+                  }
+                }}
+              >
+                {editBookData.image ? (
+                  <Image
+                    source={editBookData.image}
+                    style={editStyles.previewImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={editStyles.placeholderContainer}>
+                    <Text style={editStyles.placeholderText}>
+                      Tap to select image
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={editStyles.button}
+              onPress={handleUpdateBook}
+            >
+              <Text style={editStyles.buttonText}>Update</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={editStyles.buttonCancel}
+              onPress={() => setEditModalVisible(false)}
+            >
+              <Text style={editStyles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Modal>
     </View>
   );
 }
