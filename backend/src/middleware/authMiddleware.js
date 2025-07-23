@@ -14,13 +14,13 @@ export const protectRoute = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find the user by ID
-    const user = await User.findById(decoded.id).select("-password"); // Exclude password from the user object
+    const user = await User.findById(decoded.id).select("-password"); 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     // Attach user to the request object
     req.user = user;
-    next(); // Proceed to the next middleware or route handler
+    next(); 
   } catch (error) {
     console.error("Error in protectRoute middleware:", error);
     res.status(500).json({ message: "Internal server error" });
